@@ -1,0 +1,8 @@
+taskForm.addEventListener("submit", event => {
+  event.preventDefault();
+
+  const subject = subjectInput.value.trim();
+  const title = titleInput.value.trim();
+
+  // 입력 데이터 검사 후 일정 추가
+});
