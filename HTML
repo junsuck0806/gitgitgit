@@ -1,0 +1,757 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NIGHT STUDY | 과제 알림 센터</title>
+
+  <style>
+    /* 1. 기본 디자인 설정 */
+    :root {
+      --bg: #09090d;
+      --panel: #14141c;
+      --border: #292936;
+      --purple: #a78bfa;
+      --cyan: #67e8f9;
+      --text: #f4f4f8;
+      --muted: #9696a8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 32px 16px;
+      background:
+        radial-gradient(ellipse at top, #201532 0%, transparent 48%),
+        var(--bg);
+      color: var(--text);
+      font-family: "Nanum Gothic", "Malgun Gothic",
+                   sans-serif;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 24px 0 30px;
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      font-size: 12px;
+      letter-spacing: 4px;
+      font-weight: bold;
+    }
+
+    h1 {
+      margin: 14px 0 10px;
+      font-size: clamp(30px, 6vw, 46px);
+      letter-spacing: -1px;
+    }
+
+    h1 span {
+      color: var(--purple);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .panel {
+      background: rgba(20, 20, 28, 0.94);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin: 0 0 20px;
+    }
+
+    /* 2. 입력 폼 */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: #c8c8d6;
+      font-size: 13px;
+    }
+
+    input, select {
+      width: 100%;
+      min-width: 0;
+      background: #0b0b11;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 2px #a78bfa22;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-weight: bold;
+      font-size: 13px;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.1);
+    }
+
+    .primary {
+      width: 100%;
+      margin-top: 18px;
+      color: #100c19;
+      background: linear-gradient(100deg, var(--purple), var(--cyan));
+    }
+
+    .secondary {
+      color: var(--text);
+      background: #252532;
+      border: 1px solid #3a3a4a;
+    }
+
+    /* 3. 통계 카드 */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat {
+      padding: 18px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .stat-number {
+      margin-top: 10px;
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--cyan);
+    }
+
+    /* 4. 일정 목록 */
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .list-header h2 {
+      margin: 0;
+    }
+
+    .task-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .task {
+      padding: 18px;
+      background: #101018;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--purple);
+      border-radius: 12px;
+    }
+
+    .task.high {
+      border-left-color: #fb7185;
+    }
+
+    .task.low {
+      border-left-color: #67e8f9;
+    }
+
+    .task.done {
+      opacity: 0.55;
+    }
+
+    .task.done .task-title {
+      text-decoration: line-through;
+    }
+
+    .task-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .task-title {
+      font-size: 16px;
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    .subject {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      background: #242433;
+      color: #d5d5e4;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 11px;
+    }
+
+    .deadline {
+      color: var(--cyan);
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .task-actions button {
+      padding: 9px 12px;
+      font-size: 12px;
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 35px 10px;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      line-height: 1.8;
+    }
+
+    .notice {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+      margin-top: 16px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 22px 0;
+      color: #777789;
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    /* 5. 모바일 반응형 */
+    @media (max-width: 560px) {
+      body {
+        padding: 18px 12px;
+      }
+
+      .panel {
+        padding: 17px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field.full {
+        grid-column: auto;
+      }
+
+      .stats {
+        gap: 8px;
+      }
+
+      .stat {
+        padding: 12px;
+      }
+
+      .stat-number {
+        font-size: 23px;
+      }
+
+      .list-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+
+    <header>
+      <div class="eyebrow">PERSONAL PRODUCTIVITY SYSTEM</div>
+      <h1>NIGHT <span>STUDY.</span></h1>
+      <p class="subtitle">
+        해야 할 일을 기록하고, 마감 시간을 놓치지 마세요.<br>
+        당신의 대학 생활을 위한 미니멀 알림 센터.
+      </p>
+      <button class="secondary" id="notifyButton">
+        🔔 브라우저 알림 활성화
+      </button>
+    </header>
+
+    <!-- 통계 -->
+    <section class="stats">
+      <div class="stat">
+        <div class="stat-label">전체 일정</div>
+        <div class="stat-number" id="totalCount">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">미완료</div>
+        <div class="stat-number" id="pendingCount">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">완료</div>
+        <div class="stat-number" id="doneCount">0</div>
+      </div>
+    </section>
+
+    <!-- 일정 추가 -->
+    <section class="panel">
+      <h2>＋ 새로운 일정 등록</h2>
+
+      <form id="taskForm">
+        <div class="form-grid">
+
+          <div class="field">
+            <label for="subject">과목 / 분류</label>
+            <input id="subject" type="text"
+              placeholder="예: 웹프로그래밍" required>
+          </div>
+
+          <div class="field">
+            <label for="priority">중요도</label>
+            <select id="priority">
+              <option value="high">높음</option>
+              <option value="normal" selected>보통</option>
+              <option value="low">낮음</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <label for="title">할 일</label>
+            <input id="title" type="text"
+              placeholder="예: HTML 과제 제출" required>
+          </div>
+
+          <div class="field full">
+            <label for="deadline">마감 날짜 및 시간</label>
+            <input id="deadline" type="datetime-local"
+              required>
+          </div>
+
+        </div>
+
+        <button class="primary" type="submit">
+          일정 추가하기
+        </button>
+      </form>
+
+      <p class="notice">
+        ※ 등록한 일정은 이 브라우저에 저장됩니다.
+        마감 10분 전에 알림을 표시하며, 알림은 페이지가 열려
+        있는 동안 확인됩니다.
+      </p>
+    </section>
+
+    <!-- 일정 목록 -->
+    <section class="panel">
+      <div class="list-header">
+        <h2>📌 나의 일정</h2>
+        <select id="filter" aria-label="일정 필터"
+          style="width: auto">
+          <option value="all">전체 일정</option>
+          <option value="pending">미완료만</option>
+          <option value="done">완료만</option>
+        </select>
+      </div>
+
+      <div class="task-list" id="taskList"></div>
+    </section>
+
+    <footer>
+      NIGHT STUDY © 2026 · STAY FOCUSED.
+    </footer>
+  </main>
+
+  <script>
+    // 1. HTML 요소 가져오기
+    const taskForm = document.getElementById("taskForm");
+    const subjectInput = document.getElementById("subject");
+    const titleInput = document.getElementById("title");
+    const deadlineInput = document.getElementById("deadline");
+    const priorityInput = document.getElementById("priority");
+    const taskList = document.getElementById("taskList");
+    const filterInput = document.getElementById("filter");
+
+    // 2. 저장된 일정 불러오기
+    let tasks = [];
+
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem("nightStudyTasks") || "[]"
+      );
+
+      // 저장 데이터가 배열인지 확인
+      if (Array.isArray(saved)) {
+        tasks = saved.filter(task =>
+          task &&
+          typeof task.id === "string" &&
+          typeof task.subject === "string" &&
+          typeof task.title === "string" &&
+          typeof task.deadline === "string"
+        );
+      }
+    } catch (error) {
+      tasks = [];
+    }
+
+    // 3. 데이터 저장 함수
+    function saveTasks() {
+      localStorage.setItem(
+        "nightStudyTasks",
+        JSON.stringify(tasks)
+      );
+    }
+
+    // 4. 날짜 표시 함수
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+
+      return date.toLocaleString("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    // 5. D-day / 남은 시간 계산
+    function getRemaining(deadline) {
+      const difference = new Date(deadline).getTime()
+        - Date.now();
+
+      if (difference < 0) {
+        return "마감 지남";
+      }
+
+      const totalMinutes = Math.floor(
+        difference / (1000 * 60)
+      );
+
+      const days = Math.floor(totalMinutes / (60 * 24));
+      const hours = Math.floor(
+        (totalMinutes % (60 * 24)) / 60
+      );
+      const minutes = totalMinutes % 60;
+
+      if (days > 0) {
+        return `D-${days} · ${hours}시간 남음`;
+      }
+
+      if (hours > 0) {
+        return `${hours}시간 ${minutes}분 남음`;
+      }
+
+      return `${minutes}분 남음`;
+    }
+
+    // 6. 화면에 일정 출력
+    function renderTasks() {
+      const filter = filterInput.value;
+
+      let visibleTasks = tasks.filter(task => {
+        if (filter === "pending") return !task.done;
+        if (filter === "done") return task.done;
+        return true;
+      });
+
+      // 마감이 빠른 순서대로 정렬
+      visibleTasks.sort((a, b) =>
+        new Date(a.deadline) - new Date(b.deadline)
+      );
+
+      taskList.replaceChildren();
+
+      if (visibleTasks.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent =
+          "등록된 일정이 없습니다. ✨\n새로운 일정을 추가해 보세요.";
+        taskList.appendChild(empty);
+      }
+
+      visibleTasks.forEach(task => {
+        const card = document.createElement("article");
+
+        card.className = "task";
+        if (task.priority === "high") card.classList.add("high");
+        if (task.priority === "low") card.classList.add("low");
+        if (task.done) card.classList.add("done");
+
+        const top = document.createElement("div");
+        top.className = "task-top";
+
+        const info = document.createElement("div");
+
+        const subject = document.createElement("div");
+        subject.className = "subject";
+        subject.textContent = task.subject;
+
+        const title = document.createElement("div");
+        title.className = "task-title";
+        title.textContent = task.title;
+
+        info.append(subject, title);
+        top.appendChild(info);
+        card.appendChild(top);
+
+        const meta = document.createElement("div");
+        meta.className = "task-meta";
+
+        const dateTag = document.createElement("span");
+        dateTag.className = "tag";
+        dateTag.textContent = "📅 " + formatDate(task.deadline);
+
+        const remainingTag = document.createElement("span");
+        remainingTag.className = "tag deadline";
+        remainingTag.textContent = task.done
+          ? "완료됨"
+          : getRemaining(task.deadline);
+
+        const priorityTag = document.createElement("span");
+        priorityTag.className = "tag";
+        const priorityNames = {
+          high: "🔴 중요도 높음",
+          normal: "🟣 중요도 보통",
+          low: "🔵 중요도 낮음"
+        };
+        priorityTag.textContent =
+          priorityNames[task.priority] || "중요도 보통";
+
+        meta.append(dateTag, remainingTag, priorityTag);
+        card.appendChild(meta);
+
+        const actions = document.createElement("div");
+        actions.className = "task-actions";
+
+        const doneButton = document.createElement("button");
+        doneButton.className = "secondary";
+        doneButton.textContent = task.done
+          ? "완료 취소"
+          : "✓ 완료 처리";
+
+        doneButton.addEventListener("click", () => {
+          task.done = !task.done;
+          saveTasks();
+          renderTasks();
+        });
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "secondary";
+        deleteButton.textContent = "삭제";
+
+        deleteButton.addEventListener("click", () => {
+          const confirmed = confirm(
+            `"${task.title}" 일정을 삭제할까요?`
+          );
+
+          if (!confirmed) return;
+
+          tasks = tasks.filter(item => item.id !== task.id);
+          saveTasks();
+          renderTasks();
+        });
+
+        actions.append(doneButton, deleteButton);
+        card.appendChild(actions);
+        taskList.appendChild(card);
+      });
+
+      // 통계 업데이트
+      document.getElementById("totalCount").textContent =
+        tasks.length;
+
+      document.getElementById("pendingCount").textContent =
+        tasks.filter(task => !task.done).length;
+
+      document.getElementById("doneCount").textContent =
+        tasks.filter(task => task.done).length;
+    }
+
+    // 7. 새 일정 등록
+    taskForm.addEventListener("submit", event => {
+      event.preventDefault();
+
+      const subject = subjectInput.value.trim();
+      const title = titleInput.value.trim();
+      const deadline = deadlineInput.value;
+      const priority = priorityInput.value;
+      const deadlineTime = new Date(deadline).getTime();
+
+      if (!subject || !title || !deadline) {
+        alert("모든 항목을 입력해 주세요.");
+        return;
+      }
+
+      if (!Number.isFinite(deadlineTime)) {
+        alert("올바른 마감 날짜를 입력해 주세요.");
+        return;
+      }
+
+      if (deadlineTime <= Date.now()) {
+        alert("마감 시간은 현재보다 미래여야 합니다.");
+        return;
+      }
+
+      const task = {
+        id: crypto.randomUUID
+          ? crypto.randomUUID()
+          : String(Date.now()) + Math.random(),
+        subject: subject,
+        title: title,
+        deadline: deadline,
+        priority: priority,
+        done: false,
+        notified: false
+      };
+
+      tasks.push(task);
+
+      saveTasks();
+      renderTasks();
+      taskForm.reset();
+
+      // 기본 중요도를 보통으로 설정
+      priorityInput.value = "normal";
+    });
+
+    // 8. 브라우저 알림 권한 요청
+    document.getElementById("notifyButton")
+      .addEventListener("click", async () => {
+        if (!("Notification" in window)) {
+          alert("이 브라우저는 알림 기능을 지원하지 않습니다.");
+          return;
+        }
+
+        if (!window.isSecureContext) {
+          alert("알림 기능은 HTTPS 환경이나 localhost에서 사용해 주세요.");
+          return;
+        }
+
+        try {
+          const permission =
+            await Notification.requestPermission();
+
+          if (permission === "granted") {
+            alert("알림이 활성화되었습니다!");
+            checkNotifications();
+          } else {
+            alert("브라우저 설정에서 알림 권한을 허용해 주세요.");
+          }
+        } catch (error) {
+          alert("알림 권한을 요청하지 못했습니다.");
+        }
+      });
+
+    // 9. 마감 10분 전 알림 확인
+    function checkNotifications() {
+      if (
+        !("Notification" in window) ||
+        Notification.permission !== "granted"
+      ) {
+        return;
+      }
+
+      const now = Date.now();
+      let changed = false;
+
+      tasks.forEach(task => {
+        if (task.done || task.notified) return;
+
+        const deadlineTime = new Date(task.deadline).getTime();
+        const timeLeft = deadlineTime - now;
+
+        // 마감 10분 전부터 마감 시각 전까지
+        if (timeLeft > 0 && timeLeft <= 10 * 60 * 1000) {
+          try {
+            new Notification("⏰ NIGHT STUDY - 마감 임박!", {
+              body: `${task.title} · ${task.subject} 마감이 얼마 남지 않았어요!`
+            });
+
+            task.notified = true;
+            changed = true;
+          } catch (error) {
+            console.error("알림 표시 실패:", error);
+          }
+        }
+      });
+
+      if (changed) saveTasks();
+    }
+
+    // 10. 필터 변경 및 주기적 갱신
+    filterInput.addEventListener("change", renderTasks);
+
+    renderTasks();
+
+    // 15초마다 남은 시간과 알림 확인
+    setInterval(() => {
+      renderTasks();
+      checkNotifications();
+    }, 15000);
+  </script>
+</body>
+</html>
